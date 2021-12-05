@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-us" lang="en-us">
+<head>
+  <link href="https://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="generator" content="Hugo 0.89.4" />
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>技术例会分享—Forest框架 &middot; My New Hugo Site</title>
+  <meta name="description" content="" />
+
+  
+  <link type="text/css" rel="stylesheet" href="http://KevinAmy.github.io/css/print.css" media="print">
+  <link type="text/css" rel="stylesheet" href="http://KevinAmy.github.io/css/poole.css">
+  <link type="text/css" rel="stylesheet" href="http://KevinAmy.github.io/css/syntax.css">
+  <link type="text/css" rel="stylesheet" href="http://KevinAmy.github.io/css/hyde.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Abril+Fatface|PT+Sans:400,400i,700">
+
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="/favicon.png">
+
+  
+  
+</head>
+
+  <body class=" ">
+  <aside class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <a href="http://KevinAmy.github.io/"><h1>My New Hugo Site</h1></a>
+      <p class="lead">
+      An elegant open source and mobile first theme for <a href="http://hugo.spf13.com">hugo</a> made by <a href="http://twitter.com/mdo">@mdo</a>. Originally made for Jekyll.
+      </p>
+    </div>
+
+    <nav>
+      <ul class="sidebar-nav">
+        <li><a href="http://KevinAmy.github.io/">Home</a> </li>
+        
+      </ul>
+    </nav>
+
+    <p>&copy; 2021. All rights reserved. </p>
+  </div>
+</aside>
+
+    <main class="content container">
+    <div class="post">
+  <h1>技术例会分享—Forest框架</h1>
+  <time datetime=2021-12-05T18:31:23&#43;0800 class="post-date">Sun, Dec 5, 2021</time>
+  <h1 id="一forest">一、Forest</h1>
+<h2 id="11-业务需求">1.1 业务需求</h2>
+<p>一般情况下是后端提供接口，前端调用，解决需求，但是有的时候为了方便，复用别人的接口（网上的，公共的第三方接口（短信、天气等）），就出现了后端调用后端接口的情况。</p>
+<p>此外，因为业务关系，要和许多不同第三方公司进行对接。这些服务商都提供基于http的api，但是每家公司提供api具体细节差别很大。有的<strong>基于RESTFUL规范</strong>，有的<strong>基于传统的http规范</strong>；有的需要<strong>在header里放置签名</strong>，有的需要<strong>SSL的双向认证</strong>，有的只需要<strong>SSL的单向认证</strong>；有的以<strong>JSON方式进行序列化</strong>，有的<strong>以XML方式进行序列化</strong>······类似于这样细节的差别较多。</p>
+<!-- raw HTML omitted -->
+<h2 id="12-forest简介">1.2 Forest简介</h2>
+<p><img src="C:%5CUsers%5CXY%5CDesktop%5C%E6%8A%80%E6%9C%AF%E4%BE%8B%E4%BC%9A_Forest.assets%5Cimage-20210406211236541.png" alt="image-20210406211236541"></p>
+<p>Forest 是一个<strong>开源</strong>的 <strong>Java HTTP 客户端框架</strong>，它能够将 HTTP 的所有请求信息（包括 URL、Header 以及 Body 等信息）绑定到自定义的 Interface 方法上，能够通过调用本地接口方法的方式发送 HTTP 请求。使用 Forest 就像使用类似 Dubbo 那样的 RPC 框架一样，只需要定义接口，调用接口即可，不必关心具体发送 HTTP 请求的细节。同时将 HTTP 请求信息与业务代码<strong>解耦</strong>，方便<strong>统一管理</strong>大量 HTTP 的 URL、Header 等信息。而请求的调用方完全不必在意 HTTP 的具体内容，即使该 HTTP 请求信息发生变更，大多数情况也不需要修改调用发送请求的代码。</p>
+<h3 id="121-forest特性">1.2.1 Forest特性</h3>
+<ul>
+<li>以Httpclient和OkHttp为后端框架</li>
+<li>通过调用本地方法的方式去发送Http请求，<strong>实现了业务逻辑与Http协议之间的解耦</strong></li>
+<li>因为针对第三方接口，所以不需要依赖Spring Cloud和任何注册中心</li>
+<li>支持所有请求方法：GET，HEAD，OPTIONS，TRACE，POST，DELETE，PUT，PATCH</li>
+<li>支持文件上传和下载</li>
+<li>支持灵活的<strong>模板表达式</strong></li>
+<li><strong>支持拦截器处理请求的各个生命周期</strong></li>
+<li>支持自定义注解</li>
+<li>支持<strong>OAuth2验证</strong></li>
+<li>支持过滤器来过滤传入的数据</li>
+<li>基于注解、配置化的方式定义Http请求</li>
+<li>支持Spring和Springboot集成</li>
+<li>JSON字符串到Java对象的自动化解析</li>
+<li>XML文本到Java对象的自动化解析</li>
+<li>JSON、XML或其他类型转换器可以随意扩展和替换</li>
+<li>支持<strong>JSON转换框架</strong>：Fastjson，Jackson，Gson</li>
+<li>支持JAXB形式的XML转换</li>
+<li>可以通过OnSuccess和OnError接口参数实现请求结果的回调</li>
+<li>配置简单，一般只需要@Request一个注解就能完成绝大多数请求的定义</li>
+<li>支持<strong>异步请求调用</strong></li>
+<li>约定大于配置</li>
+<li><strong>自定义拦截器</strong>、自定义注解，扩展Forest的能力</li>
+</ul>
+<h3 id="122-forest工作原理">1.2.2 Forest工作原理</h3>
+<p>Forest会将定义好的接口通过动态代理的方式生成一个具体的实现类，然后组织、验证 HTTP 请求信息，绑定动态数据，转换数据形式，SSL 验证签名，调用后端 HTTP API(httpclient 等 API)执行实际请求，等待响应，失败重试，转换响应数据到 Java 类型等脏活累活都由这动态代理的实现类给包了。请求发送方调用这个接口时，实际上就是在调用这个干脏活累活的实现类。</p>
+<h3 id="123-forest架构">1.2.3 Forest架构</h3>
+<p><img src="C:%5CUsers%5CXY%5CDesktop%5CForest.assets%5Cimage-20210327153533391.png" alt="image-20210327153533391"></p>
+<p>HTTP 发送请求的过程分为前端部分和后端部分，Forest 本身是处理前端过程的框架，是对后端 HTTP API 框架的进一步封装。</p>
+<p><strong>前端部分：</strong></p>
+<p>（1）Forest 配置： 负责管理 HTTP 发送请求所需的配置。</p>
+<p>（2）Forest 注解： 用于定义 HTTP 发送请求的所有相关信息，一般定义在 interface 上和其方法上。</p>
+<p>（3）动态代理： 用户定义好的 HTTP 请求的<code>interface</code>将通过动态代理产生实际执行发送请求过程的代理类。</p>
+<p>（4）模板表达式： 模板表达式可以嵌入在几乎所有的 HTTP 请求参数定义中，它能够将用户通过参数或全局变量传入的数据动态绑定到 HTTP 请求信息中。</p>
+<p>（5）数据转换： 此模块将字符串数据和<code>JSON</code>或<code>XML</code>形式数据进行互转。目前 JSON 转换器支持<code>Jackson</code>、<code>Fastjson</code>、<code>Gson</code>三种，XML 支持<code>JAXB</code>一种。</p>
+<p>（6）拦截器： 用户可以自定义拦截器，拦截指定的一个或一批请求的开始、成功返回数据、失败、完成等生命周期中的各个环节，以插入自定义的逻辑进行处理。</p>
+<p>（7）过滤器： 用于动态过滤和处理传入 HTTP 请求的相关数据。</p>
+<p>（8）SSL： Forest 支持单向和双向验证的 HTTPS 请求，此模块用于处理 SSL 相关协议的内容</p>
+<p><strong>后端部分：</strong></p>
+<p>后端为实际执行 HTTP 请求发送过程的第三方 HTTP API，目前支持<code>okHttp3</code>和<code>httpclient</code>两种后端 API</p>
+<p>**Spring Boot Starter Forest：**提供对<code>Spring Boot</code>的支持</p>
+<h1 id="二httpclient">二、HttpClient</h1>
+<p>HTTP 协议可能是现在 Internet 上使用得最多、最重要的协议了，越来越多的 Java 应用程序需要直接通过 HTTP 协议来访问网络资源。虽然JDK 的 java net包中已经提供了访问 HTTP 协议的基本功能，但是对于大部分应用程序来说，JDK 库本身提供的功能还不够丰富和灵活。HttpClient用来提供高效的、最新的、功能丰富的支持 HTTP 协议的客户端编程工具包，并且它支持 HTTP 协议的最新版本。</p>
+<p>最初，HttpClient 是Apache Jakarta Common 下的子项目，可以用来提供高效的、最新的、功能丰富的支持 HTTP 协议的客户端编程工具包，并且它支持 HTTP 协议最新的版本和建议。</p>
+<p>如今，Apache Jakarta Commons HttpClient项目已经寿终正寝，不再开发和维护。取而代之的是Apache Httpcomponents项目，它包括HttpClient和HttpCore两大模块，能提供更好的性能和更大的灵活性。</p>
+<h2 id="21-主要功能">2.1 主要功能</h2>
+<p>HttpClient 提供的主要的功能：</p>
+<ul>
+<li>实现了所有HTTP的方法(GET、POST、PUT、HEAD等)</li>
+<li>支持自动转向</li>
+<li>支持 HTTPS 协议</li>
+<li>支持代理服务器</li>
+<li>······</li>
+</ul>
+<h2 id="22-使用方法">2.2 使用方法</h2>
+<p>使用HttpClient发送请求和接收响应一般分为以下几步：</p>
+<p>（1）创建HttpClient对象；</p>
+<p>（2）创建请求方法的实例，并指定请求URL。如果需要发送GET请求，创建HttpGet对象；如果需要发送POST请求，创建HttpPost对象；</p>
+<p>（3）如果需要发送请求参数，可调用HttpGet、HttpPost共同的setParams(HetpParams params)方法来添加请求参数；对于HttpPost对象而言，也可调用</p>
+<p>​		  setEntity(HttpEntity entity)方法来设置请求参数；</p>
+<p>（4）调用HttpClient对象的execute(HttpUriRequest request)发送请求，该方法返回一个HttpResponse；</p>
+<p>（5）调用HttpResponse的getAllHeaders()、getHeaders(String name)等方法可获取服务器的响应头；调用HttpResponse的getEntity()方法可获取HttpEntity对</p>
+<p>​		   象，该对象包装了服务器的响应内容，程序可通过该对象获取服务器的响应内容；</p>
+<p>（6）释放连接。无论执行方法是否成功，都必须释放连接。</p>
+<h1 id="三okhttp">三、Okhttp</h1>
+<h2 id="31-okhttp简介">3.1 Okhttp简介</h2>
+<p>Okhttp作为目前Android使用最为广泛的网络框架之一，是一个高效的HTTP Client，其高效性体现在：</p>
+<ul>
+<li>支持Spdy、Http1.X、Http2、Quic以及WebSocket</li>
+<li>连接池复用底层TCP(Socket)，减少请求延时</li>
+<li>无缝的支持GZIP减少数据流量</li>
+<li>缓存响应数据减少重复的网络请求</li>
+<li>请求失败自动重试主机的其他ip，自动重定向</li>
+<li>······</li>
+</ul>
+<h2 id="32-okhttp请求机制">3.2 Okhttp请求机制</h2>
+<p>首先来了解下HTTP client、request、response。HTTP client的作用是接受request请求并返回response信息。request请求通常包含一个 URL，一个方法 (比如GET/POST)，以及一个headers列表，还可能包含一个body（特定内容类型的数据流）。response则通常用响应代码(比如200表示成功，404表示未找到)、headers和可选的body来响应request请求。</p>
+<p>Okhttp的请求机制，可以概括为以下流程：</p>
+<p>（1）通过OkhttpClient创建一个Call，发起同步或异步请求；</p>
+<p>（2）okhttp通过Dispatcher对所有的RealCall（Call的具体实现类）进行统一管理，并通过execute()及enqueue()方法对同步或异步请求进行处理；</p>
+<p>（3）execute()及enqueue()这两个方法会最终调用RealCall中的getResponseWithInterceptorChain()方法，从拦截器链中获取返回结果；</p>
+<p>（4）拦截器链中，依次通过RetryAndFollowUpInterceptor（重定向拦截器）、BridgeInterceptor（桥接拦截器）、CacheInterceptor（缓存拦截器）、</p>
+<p>​		ConnectInterceptor（连接拦截器）、CallServerInterceptor（网络拦截器）对请求依次处理，与服务器建立连接后，获取返回数据，再经过上述拦截器依次		处理后，最后将结果返回给调用方。具体过程如下图所示：</p>
+<p><img src="C:%5CUsers%5CXY%5CDesktop%5C%E6%8A%80%E6%9C%AF%E4%BE%8B%E4%BC%9A_Forest.assets%5C20191217161623327.png" alt=""></p>
+<h2 id="33-具体架构图">3.3 具体架构图</h2>
+<p><img src="C:%5CUsers%5CXY%5CDesktop%5C%E6%8A%80%E6%9C%AF%E4%BE%8B%E4%BC%9A_Forest.assets%5C6332336-1264c58e9ff12009.png" alt="img"></p>
+<p>（1）RetryAndFollowUpInterceptor：负责重定向：构建一个StreamAllocation对象，然后调用下一个拦截器获取结果，从返回结果中获取重定向的request，如果重定向的request不为空的话，并且不超过重定向最大次数的话就进行重定向，否则返回结果。注意：这里是通过一个while（true）的循环完成下一轮的重定向请求。</p>
+<ul>
+<li>
+<p>StreamAllocation为什么在第一个拦截器中就进行创建？      </p>
+<p>便于取消请求以及出错释放资源。 </p>
+</li>
+<li>
+<p>StreamAllocation的作用是什么？      </p>
+<p>StreamAllocation负责统筹管理Connection、Stream、Call三个实体类，具体就是为一个Call（Realcall），寻找（ findConnection() ）一个</p>
+</li>
+</ul>
+<p>Connection（RealConnection），获取一个Stream（HttpCode）。</p>
+<p>（2）BridgeInterceptor：负责将原始Requset转换给发送给服务端的Request以及将Response转化成对调用方友好的Response。 具体就是对request添加Content-Type、Content-Length、cookie、Connection、Host、Accept-Encoding等请求头以及对返回结果进行解压、保持cookie等。</p>
+<p>（3）CacheInterceptor：负责读取缓存以及更新缓存。 在请求阶段：</p>
+<p>读取候选缓存cacheCandidate；</p>
+<p>根据originOequest和cacheresponse创建缓存策略CacheStrategy；</p>
+<p>根据缓存策略，来决定是否使用网络或者使用缓存或者返回错误。 </p>
+<p>（4）ConnectInterceptor：负责与服务器建立连接，使用StreamAllocation.newStream来和服务端建立连接，并返回输入输出流（HttpCodec），实际上是通过</p>
+<p>StreamAllocation中的findConnection寻找一个可用的Connection，然后调用Connection的connect方法，使用socket与服务端建立连接。</p>
+<p>（5）CallServerInterceptor：负责从服务器读取响应的数据，主要的工作就是把请求的Request写入到服务端，然后从服务端读取Response。 </p>
+<h2 id="34-设计模式">3.4 设计模式</h2>
+<p>（1）拦截器：责任链模式</p>
+<p><img src="C:%5CUsers%5CXY%5CDesktop%5C%E6%8A%80%E6%9C%AF%E4%BE%8B%E4%BC%9A_Forest.assets%5Cimage-20210406104227523.png" alt="image-20210406104227523"></p>
+<p>（2）okhttpclient：外观模式</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">OkHttpClient client <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> OkHttpClient<span style="color:#f92672">.</span><span style="color:#a6e22e">Builder</span><span style="color:#f92672">()</span>
+        <span style="color:#f92672">.</span><span style="color:#a6e22e">addInterceptor</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> HttpLoggingInterceptor<span style="color:#f92672">())</span> 
+        <span style="color:#f92672">.</span><span style="color:#a6e22e">readTimeout</span><span style="color:#f92672">(</span>500<span style="color:#f92672">,</span> TimeUnit<span style="color:#f92672">.</span><span style="color:#a6e22e">MILLISECONDS</span><span style="color:#f92672">)</span>
+        <span style="color:#f92672">.</span><span style="color:#a6e22e">build</span><span style="color:#f92672">();</span>
+</code></pre></div><p>在这里，我们实例化了一个HTTP的客户端client，然后配置了它的一些参数，比如拦截器、超时时间。我们通过一个统一的对象，调用一个接口或方法，就能完成我们的需求，而其内部的各种复杂对象的调用和跳转都不需要我们关心，从而降低访问复杂系统的内部子系统时的复杂度，简化客户端与之的接口。</p>
+<p>（3）Request：建造者模式</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">val request<span style="color:#f92672">:</span> Request <span style="color:#f92672">=</span> Request<span style="color:#f92672">.</span><span style="color:#a6e22e">Builder</span><span style="color:#f92672">()</span>
+    <span style="color:#f92672">.</span><span style="color:#a6e22e">url</span><span style="color:#f92672">(</span>url<span style="color:#f92672">)</span>
+    <span style="color:#f92672">.</span><span style="color:#a6e22e">build</span><span style="color:#f92672">()</span>
+
+<span style="color:#75715e">//Request.kt
+</span><span style="color:#75715e"></span>open <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Builder</span> <span style="color:#f92672">{</span>
+    internal var url<span style="color:#f92672">:</span> HttpUrl<span style="color:#f92672">?</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span>
+    internal var method<span style="color:#f92672">:</span> String
+    internal var headers<span style="color:#f92672">:</span> Headers<span style="color:#f92672">.</span><span style="color:#a6e22e">Builder</span>
+    internal var body<span style="color:#f92672">:</span> RequestBody<span style="color:#f92672">?</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span>
+
+    <span style="color:#a6e22e">constructor</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+      <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">method</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;GET&#34;</span>
+      <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">headers</span> <span style="color:#f92672">=</span> Headers<span style="color:#f92672">.</span><span style="color:#a6e22e">Builder</span><span style="color:#f92672">()</span>
+    <span style="color:#f92672">}</span>
+
+    open fun <span style="color:#a6e22e">build</span><span style="color:#f92672">():</span> Request <span style="color:#f92672">{</span>
+      <span style="color:#66d9ef">return</span> Request<span style="color:#f92672">(</span>
+          checkNotNull<span style="color:#f92672">(</span>url<span style="color:#f92672">)</span> <span style="color:#f92672">{</span> <span style="color:#e6db74">&#34;url == null&#34;</span> <span style="color:#f92672">},</span>
+          method<span style="color:#f92672">,</span>
+          headers<span style="color:#f92672">.</span><span style="color:#a6e22e">build</span><span style="color:#f92672">(),</span>
+          body<span style="color:#f92672">,</span>
+          tags<span style="color:#f92672">.</span><span style="color:#a6e22e">toImmutableMap</span><span style="color:#f92672">()</span>
+      <span style="color:#f92672">)</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>从Request的生成代码中可以看到，用到了其内部类Builder，然后通过Builder类组装出了一个完整的有着各种参数的Request类。我们可以通过Builder，构建不同的Request请求，只需要传入不同的请求地址url，请求方法method，头部信息headers，请求体body即可。</p>
+<p>（4）享元模式：通过线程池、连接池共享对象</p>
+<p>（5）工厂模式：通过OkHttpClient生产出产品RealCall</p>
+<h1 id="四forest使用">四、Forest使用</h1>
+<h2 id="41-forest基础">4.1 Forest基础</h2>
+<h3 id="411-配置层级">4.1.1 配置层级</h3>
+<ul>
+<li>全局配置：<code>application.yml</code> / <code>application.properties</code>配置（spring、Spring Boot项目）以及通过<code>ForestConfiguration</code>对象（普通Java项目）设置</li>
+<li>接口配置</li>
+<li>请求配置</li>
+</ul>
+<p><img src="C:%5CUsers%5CXY%5CDesktop%5CForest.assets%5Cforest_config_level.svg" alt="architecture"></p>
+<p>Forest 的配置层级：</p>
+<ol>
+<li>全局配置：针对全局所有请求，作用域最大，配置读取的优先级最小。</li>
+<li>接口配置：作用域为某一个<code>interface</code>中定义的请求，读取的优先级最小。可以通过在<code>interface</code>上修饰<code>@BaseRequest</code>注解进行配置。</li>
+<li>请求配置：作用域为某一个具体的请求，读取的优先级最高。可以在接口的方法上修饰<code>@Request</code>注解进行 HTTP 信息配置的定义。</li>
+</ol>
+<h3 id="412-全局基本配置">4.1.2 全局基本配置</h3>
+<p>下面以Spring Boot项目为例：</p>
+<p>在<code>application.yaml</code> / <code>application.properties</code>中配置的 HTTP 基本参数</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">forest:
+  bean<span style="color:#f92672">-</span>id<span style="color:#f92672">:</span> config0 				<span style="color:#960050;background-color:#1e0010">#</span> 在spring上下文中bean的id<span style="color:#f92672">,</span> 默认值为forestConfiguration
+  backend<span style="color:#f92672">:</span> okhttp3 				<span style="color:#960050;background-color:#1e0010">#</span> 后端HTTP API<span style="color:#960050;background-color:#1e0010">：</span> okhttp3<span style="color:#960050;background-color:#1e0010">，</span>默认为okhttp3<span style="color:#960050;background-color:#1e0010">，</span>也可以改为httpclient
+  max<span style="color:#f92672">-</span>connections<span style="color:#f92672">:</span> 1000 		<span style="color:#960050;background-color:#1e0010">#</span> 连接池最大连接数<span style="color:#960050;background-color:#1e0010">，</span>默认值为500
+  max<span style="color:#f92672">-</span>route<span style="color:#f92672">-</span>connections<span style="color:#f92672">:</span> 500	<span style="color:#960050;background-color:#1e0010">#</span> 每个路由的最大连接数<span style="color:#960050;background-color:#1e0010">，</span>默认值为500
+  timeout<span style="color:#f92672">:</span> 3000 				<span style="color:#960050;background-color:#1e0010">#</span> 请求超时时间<span style="color:#960050;background-color:#1e0010">，</span>单位为毫秒<span style="color:#f92672">,</span> 默认值为3000
+  connect<span style="color:#f92672">-</span>timeout<span style="color:#f92672">:</span> 3000 		<span style="color:#960050;background-color:#1e0010">#</span> 连接超时时间<span style="color:#960050;background-color:#1e0010">，</span>单位为毫秒<span style="color:#f92672">,</span> 默认值为2000
+  retry<span style="color:#f92672">-</span>count<span style="color:#f92672">:</span> 1 				<span style="color:#960050;background-color:#1e0010">#</span> 请求失败后重试次数<span style="color:#960050;background-color:#1e0010">，</span>默认为0次不重试
+  ssl<span style="color:#f92672">-</span>protocol<span style="color:#f92672">:</span> SSLv3 			<span style="color:#960050;background-color:#1e0010">#</span> 单向验证的HTTPS的默认SSL协议<span style="color:#960050;background-color:#1e0010">，</span>默认为SSLv3
+  logEnabled<span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span> 				<span style="color:#960050;background-color:#1e0010">#</span> 打开或关闭日志<span style="color:#960050;background-color:#1e0010">，</span>默认为true
+  log<span style="color:#f92672">-</span>request<span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span> 			<span style="color:#960050;background-color:#1e0010">#</span> 打开<span style="color:#f92672">/</span>关闭Forest请求日志<span style="color:#960050;background-color:#1e0010">（</span>默认为 <span style="color:#66d9ef">true</span><span style="color:#960050;background-color:#1e0010">）</span>
+  log<span style="color:#f92672">-</span>response<span style="color:#f92672">-</span>status<span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span> 	<span style="color:#960050;background-color:#1e0010">#</span> 打开<span style="color:#f92672">/</span>关闭Forest响应状态日志<span style="color:#960050;background-color:#1e0010">（</span>默认为 <span style="color:#66d9ef">true</span><span style="color:#960050;background-color:#1e0010">）</span>
+  log<span style="color:#f92672">-</span>response<span style="color:#f92672">-</span>content<span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span> 	<span style="color:#960050;background-color:#1e0010">#</span> 打开<span style="color:#f92672">/</span>关闭Forest响应内容日志<span style="color:#960050;background-color:#1e0010">（</span>默认为 <span style="color:#66d9ef">false</span><span style="color:#960050;background-color:#1e0010">）</span>
+</code></pre></div><p>配置Bean ID</p>
+<p>Forest 允许在 yaml 文件中配置 Bean Id，它对应着<code>ForestConfiguration</code>对象在 Spring 上下文中的 Bean 名称。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">forest:
+  bean<span style="color:#f92672">-</span>id<span style="color:#f92672">:</span> config0 			<span style="color:#960050;background-color:#1e0010">#</span> 在spring上下文中bean的id<span style="color:#960050;background-color:#1e0010">，</span>默认值为forestConfiguration
+</code></pre></div><p>然后便可以在 Spring 中通过 Bean 的名称引用到它</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Resource</span><span style="color:#f92672">(</span>name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;config0&#34;</span><span style="color:#f92672">)</span>
+<span style="color:#66d9ef">private</span> ForestConfiguration config0<span style="color:#f92672">;</span>
+</code></pre></div><h3 id="413-构建接口">4.1.3 构建接口</h3>
+<p>在 Forest 依赖加入好之后，就可以构建 HTTP 请求的接口了，在 Forest 中，所有的 HTTP 请求信息都要绑定到某一个接口的方法上，不需要编写具体的代码去发送请求。请求发送方通过调用事先定义好 HTTP 请求信息的接口方法，自动去执行 HTTP 发送请求的过程，其具体发送请求信息就是该方法对应绑定的 HTTP 请求信息。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">	<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">MyClient</span> <span style="color:#f92672">{</span>
+    <span style="color:#75715e">/**
+</span><span style="color:#75715e">     * 获取用户所有设备信息
+</span><span style="color:#75715e">     */</span>
+    <span style="color:#a6e22e">@Post</span><span style="color:#f92672">(</span>url <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;https://yunlong.farm.xiaomaiot.com/v6/device_chunk/all&#34;</span><span style="color:#f92672">,</span>
+            headers <span style="color:#f92672">=</span> <span style="color:#f92672">{</span>
+                    <span style="color:#e6db74">&#34;token: ${token}&#34;</span><span style="color:#f92672">,</span>
+                    <span style="color:#e6db74">&#34;Content-Type:application/json&#34;</span>
+            <span style="color:#f92672">})</span>
+    String <span style="color:#a6e22e">getDevice</span><span style="color:#f92672">(</span><span style="color:#a6e22e">@DataVariable</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;token&#34;</span><span style="color:#f92672">)</span> String token<span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+</code></pre></div><h3 id="414-http-method">4.1.4 HTTP Method</h3>
+<p>（1）POST方式</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">MyClient</span> <span style="color:#f92672">{</span>
+
+    <span style="color:#75715e">/**
+</span><span style="color:#75715e">     * 通过 @Request 注解的 type 参数指定 HTTP 请求的方式。
+</span><span style="color:#75715e">     */</span>
+    <span style="color:#a6e22e">@Request</span><span style="color:#f92672">(</span>
+            url <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;http://localhost:8080/hello&#34;</span><span style="color:#f92672">,</span>
+            type <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;POST&#34;</span>
+    <span style="color:#f92672">)</span>
+    String <span style="color:#a6e22e">simplePost</span><span style="color:#f92672">();</span>
+
+    <span style="color:#75715e">/**
+</span><span style="color:#75715e">     * 使用 @Post 注解，可以去掉 type = &#34;POST&#34; 这行属性
+</span><span style="color:#75715e">     */</span>
+    <span style="color:#a6e22e">@Post</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;http://localhost:8080/hello&#34;</span><span style="color:#f92672">)</span>
+    String <span style="color:#a6e22e">simplePost</span><span style="color:#f92672">();</span>
+
+    <span style="color:#75715e">/**
+</span><span style="color:#75715e">     * 使用 @PostRequest 注解，和上面效果等价
+</span><span style="color:#75715e">     */</span>
+    <span style="color:#a6e22e">@PostRequest</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;http://localhost:8080/hello&#34;</span><span style="color:#f92672">)</span>
+    String <span style="color:#a6e22e">simplePost</span><span style="color:#f92672">();</span>
+
+<span style="color:#f92672">}</span>
+</code></pre></div><p>（2）GET请求</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// GET请求
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">@Request</span><span style="color:#f92672">(</span>
+        url <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;http://localhost:8080/hello&#34;</span><span style="color:#f92672">,</span>
+        type <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;get&#34;</span>
+<span style="color:#f92672">)</span>
+String <span style="color:#a6e22e">simpleGet</span><span style="color:#f92672">();</span>
+</code></pre></div><p>（3）PUT请求</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// PUT请求
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">@Request</span><span style="color:#f92672">(</span>
+        url <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;http://localhost:8080/hello&#34;</span><span style="color:#f92672">,</span>
+        type <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;put&#34;</span>
+<span style="color:#f92672">)</span>
+String <span style="color:#a6e22e">simplePut</span><span style="color:#f92672">();</span>
+</code></pre></div><p>（4）HEAD请求</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// HEAD请求
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">@Request</span><span style="color:#f92672">(</span>
+        url <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;http://localhost:8080/hello&#34;</span><span style="color:#f92672">,</span>
+        type <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;head&#34;</span>
+<span style="color:#f92672">)</span>
+String <span style="color:#a6e22e">simpleHead</span><span style="color:#f92672">();</span>
+</code></pre></div><p>（5）Options请求</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// Options请求
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">@Request</span><span style="color:#f92672">(</span>
+        url <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;http://localhost:8080/hello&#34;</span><span style="color:#f92672">,</span>
+        type <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;options&#34;</span>
+<span style="color:#f92672">)</span>
+String <span style="color:#a6e22e">simpleOptions</span><span style="color:#f92672">();</span>
+</code></pre></div><p>（6）Delete请求</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// Delete请求
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">@Request</span><span style="color:#f92672">(</span>
+        url <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;http://localhost:8080/hello&#34;</span><span style="color:#f92672">,</span>
+        type <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;delete&#34;</span>
+<span style="color:#f92672">)</span>
+String <span style="color:#a6e22e">simpleDelete</span><span style="color:#f92672">();</span>
+</code></pre></div><p>注：</p>
+<ul>
+<li><code>@Get</code>和<code>@GetRequest</code>两个注解的效果是等价的，<code>@Post</code>和<code>@PostRequest</code>、<code>@Put</code>和<code>@PutRequest</code>等注解也是同理</li>
+<li>HEAD请求类型没有对应的@Head注解，只有@HeadRequest注解，原因是容易和@Header注解混淆</li>
+</ul>
+<h3 id="415-http-url">4.1.5 HTTP URL</h3>
+<p>HTTP请求可以没有请求头、请求体，但一定会有<code>URL</code>，以及很多请求的参数都是直接绑定在<code>URL</code>的<code>Query</code>部分上。</p>
+<p>基本<code>URL</code>设置方法只要在<code>url</code>属性中填入完整的请求地址即可。</p>
+<p>除此之外，也可以从外部动态传入<code>URL</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">/**
+</span><span style="color:#75715e"> * 整个完整的URL都通过 @DataVariable 注解修饰的参数动态传入
+</span><span style="color:#75715e"> */</span>
+<span style="color:#a6e22e">@Request</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;${myURL}&#34;</span><span style="color:#f92672">)</span>
+String <span style="color:#a6e22e">send1</span><span style="color:#f92672">(</span><span style="color:#a6e22e">@DataVariable</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;myURL&#34;</span><span style="color:#f92672">)</span> String myURL<span style="color:#f92672">);</span>
+
+<span style="color:#75715e">/**
+</span><span style="color:#75715e"> * 通过参数转入的值值作为URL的一部分
+</span><span style="color:#75715e"> */</span>
+<span style="color:#a6e22e">@Request</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;http://${myURL}/abc&#34;</span><span style="color:#f92672">)</span>
+String <span style="color:#a6e22e">send2</span><span style="color:#f92672">(</span><span style="color:#a6e22e">@DataVariable</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;myURL&#34;</span><span style="color:#f92672">)</span> String myURL<span style="color:#f92672">);</span>
+</code></pre></div><h3 id="416-http-header">4.1.6 HTTP Header</h3>
+<p>（1）headers属性</p>
+<p><img src="C:%5CUsers%5CXY%5CDesktop%5CForest.assets%5Cimage-20210328165237815.png" alt="image-20210328165237815"></p>
+<p>该接口调用后所实际产生的 HTTP 请求如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">GET http<span style="color:#f92672">:</span><span style="color:#75715e">//localhost:8080/hello/user
+</span><span style="color:#75715e"></span>HEADER:
+    Accept<span style="color:#f92672">-</span>Charset<span style="color:#f92672">:</span> utf<span style="color:#f92672">-</span>8
+    Content<span style="color:#f92672">-</span>Type<span style="color:#f92672">:</span> text<span style="color:#f92672">/</span>plain
+</code></pre></div><p>（2）数据绑定</p>
+<p><img src="C:%5CUsers%5CXY%5CDesktop%5CForest.assets%5Cimage-20210328165859272.png" alt="image-20210328165859272"></p>
+<p>这段调用所实际产生的 HTTP 请求如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">GET http<span style="color:#f92672">:</span><span style="color:#75715e">//localhost:8080/hello/user
+</span><span style="color:#75715e"></span>HEADER:
+    Accept<span style="color:#f92672">-</span>Charset<span style="color:#f92672">:</span> gbk
+    Content<span style="color:#f92672">-</span>Type<span style="color:#f92672">:</span> text<span style="color:#f92672">/</span>plain
+</code></pre></div><p>（3）@Header注解</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">/**
+</span><span style="color:#75715e"> * 使用 @Header 注解将参数绑定到请求头上
+</span><span style="color:#75715e"> * @Header 注解的 value 指为请求头的名称，参数值为请求头的值
+</span><span style="color:#75715e"> * @Header(&#34;Accept&#34;) String accept将字符串类型参数绑定到请求头 Accept 上
+</span><span style="color:#75715e"> * @Header(&#34;accessToken&#34;) String accessToken将字符串类型参数绑定到请求头 accessToken 上
+</span><span style="color:#75715e"> */</span>
+<span style="color:#a6e22e">@Post</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;http://localhost:8080/hello/user?username=foo&#34;</span><span style="color:#f92672">)</span>
+<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">postUser</span><span style="color:#f92672">(</span><span style="color:#a6e22e">@Header</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Accept&#34;</span><span style="color:#f92672">)</span> String accept<span style="color:#f92672">,</span> <span style="color:#a6e22e">@Header</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;accessToken&#34;</span><span style="color:#f92672">)</span> String accessToken<span style="color:#f92672">);</span>
+</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">/**
+</span><span style="color:#75715e"> * 使用 @Header 注解可以修饰 Map 类型的参数
+</span><span style="color:#75715e"> * Map 的 Key 指为请求头的名称，Value 为请求头的值
+</span><span style="color:#75715e"> * 通过此方式，可以将 Map 中所有的键值对批量地绑定到请求头中
+</span><span style="color:#75715e"> */</span>
+<span style="color:#a6e22e">@Post</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;http://localhost:8080/hello/user?username=foo&#34;</span><span style="color:#f92672">)</span>
+<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">headHelloUser</span><span style="color:#f92672">(</span><span style="color:#a6e22e">@Header</span> Map<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">,</span> Object<span style="color:#f92672">&gt;</span> headerMap<span style="color:#f92672">);</span>
+
+
+<span style="color:#75715e">/**
+</span><span style="color:#75715e"> * 使用 @Header 注解可以修饰自定义类型的对象参数
+</span><span style="color:#75715e"> * 依据对象类的 Getter 和 Setter 的规则取出属性
+</span><span style="color:#75715e"> * 其属性名为 URL 请求头的名称，属性值为请求头的值
+</span><span style="color:#75715e"> * 以此方式，将一个对象中的所有属性批量地绑定到请求头中
+</span><span style="color:#75715e"> */</span>
+<span style="color:#a6e22e">@Post</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;http://localhost:8080/hello/user?username=foo&#34;</span><span style="color:#f92672">)</span>
+<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">headHelloUser</span><span style="color:#f92672">(</span><span style="color:#a6e22e">@Header</span> MyHeaderInfo headersInfo<span style="color:#f92672">);</span>
+</code></pre></div><h3 id="417-http-body">4.1.7 HTTP Body</h3>
+<p>在<code>POST</code>和<code>PUT</code>等请求方法中，通常使用 HTTP 请求体进行传输数据。在 Forest 中有多种方式设置请求体数据。</p>
+<p>（1）@Body注解</p>
+<p>您可以使用<code>@Body</code>注解修饰参数的方式，将传入参数的数据绑定到 HTTP 请求体中。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">/**
+</span><span style="color:#75715e"> * 默认body格式为 application/x-www-form-urlencoded，即以表单形式序列化数据
+</span><span style="color:#75715e"> */</span>
+<span style="color:#a6e22e">@Post</span><span style="color:#f92672">(</span>
+    url <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;http://localhost:8080/user&#34;</span><span style="color:#f92672">,</span>
+    headers <span style="color:#f92672">=</span> <span style="color:#f92672">{</span><span style="color:#e6db74">&#34;Accept:text/plain&#34;</span><span style="color:#f92672">}</span>
+<span style="color:#f92672">)</span>
+String <span style="color:#a6e22e">sendPost</span><span style="color:#f92672">(</span><span style="color:#a6e22e">@Body</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;username&#34;</span><span style="color:#f92672">)</span> String username<span style="color:#f92672">,</span>  <span style="color:#a6e22e">@Body</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;password&#34;</span><span style="color:#f92672">)</span> String password<span style="color:#f92672">);</span>
+</code></pre></div><p>（2）表单格式</p>
+<p>上面使用 @Body 注解的例子用的是普通的表单格式，也就是<code>contentType</code>属性为<code>application/x-www-form-urlencoded</code>的格式，即<code>contentType</code>不做配置时的默认值。</p>
+<p>表单格式的请求体以字符串 <code>key1=value1&amp;key2=value2&amp;...&amp;key{n}=value{n}</code> 的形式进行传输数据，其中<code>value</code>都是已经过 URL Encode 编码过的字符串。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">/**
+</span><span style="color:#75715e"> * contentType属性设置为 application/x-www-form-urlencoded 即为表单格式，
+</span><span style="color:#75715e"> * 当然不设置的时候默认值也为 application/x-www-form-urlencoded， 也同样是表单格式。
+</span><span style="color:#75715e"> * 在 @Body 注解的 value 属性中设置的名称为表单项的 key 名，
+</span><span style="color:#75715e"> * 而注解所修饰的参数值即为表单项的值，它可以为任何类型，不过最终都会转换为字符串进行传输。
+</span><span style="color:#75715e"> */</span>
+<span style="color:#a6e22e">@Post</span><span style="color:#f92672">(</span>
+    url <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;http://localhost:8080/user&#34;</span><span style="color:#f92672">,</span>
+    contentType <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;application/x-www-form-urlencoded&#34;</span><span style="color:#f92672">,</span>
+    headers <span style="color:#f92672">=</span> <span style="color:#f92672">{</span><span style="color:#e6db74">&#34;Accept:text/plain&#34;</span><span style="color:#f92672">}</span>
+<span style="color:#f92672">)</span>
+String <span style="color:#a6e22e">sendPost</span><span style="color:#f92672">(</span><span style="color:#a6e22e">@Body</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;key1&#34;</span><span style="color:#f92672">)</span> String value1<span style="color:#f92672">,</span>  <span style="color:#a6e22e">@Body</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;key2&#34;</span><span style="color:#f92672">)</span> Integer value2<span style="color:#f92672">,</span> <span style="color:#a6e22e">@Body</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;key3&#34;</span><span style="color:#f92672">)</span> Long value3<span style="color:#f92672">);</span>
+</code></pre></div><p>（3）JSON格式</p>
+<p>（4）XML格式</p>
+<h3 id="418-baserequest注解">4.1.8 @BaseRequest注解</h3>
+<p><code>@BaseRequest</code>注解定义在接口类上，在<code>@BaseRequest</code>上定义的属性会被分配到该接口中每一个方法上，但方法上定义的请求属性会覆盖<code>@BaseRequest</code>上重复定义的内容。 因此可以认为<code>@BaseRequest</code>上定义的属性内容是所在接口中所有请求的默认属性。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">/**
+</span><span style="color:#75715e"> * @BaseRequest 为配置接口层级请求信息的注解，
+</span><span style="color:#75715e"> * 其属性会成为该接口下所有请求的默认属性，
+</span><span style="color:#75715e"> * 但可以被方法上定义的属性所覆盖
+</span><span style="color:#75715e"> */</span>
+<span style="color:#a6e22e">@BaseRequest</span><span style="color:#f92672">(</span>
+    baseURL <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;http://localhost:8080&#34;</span><span style="color:#f92672">,</span>     <span style="color:#75715e">// 默认域名
+</span><span style="color:#75715e"></span>    headers <span style="color:#f92672">=</span> <span style="color:#f92672">{</span>
+        <span style="color:#e6db74">&#34;Accept:text/plain&#34;</span>                <span style="color:#75715e">// 默认请求头
+</span><span style="color:#75715e"></span>    <span style="color:#f92672">},</span>
+    sslProtocol <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;TLS&#34;</span>                    <span style="color:#75715e">// 默认单向SSL协议
+</span><span style="color:#75715e"></span><span style="color:#f92672">)</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">MyClient</span> <span style="color:#f92672">{</span>
+  
+    <span style="color:#75715e">// 方法的URL不必再写域名部分
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">@Get</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;/hello/user&#34;</span><span style="color:#f92672">)</span>     
+    String <span style="color:#a6e22e">send1</span><span style="color:#f92672">(</span><span style="color:#a6e22e">@Query</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;username&#34;</span><span style="color:#f92672">)</span> String username<span style="color:#f92672">);</span>
+
+    <span style="color:#75715e">// 若方法的URL是完整包含http://开头的，那么会以方法的URL中域名为准，不会被接口层级中的baseURL属性覆盖
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">@Get</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;http://www.xxx.com/hello/user&#34;</span><span style="color:#f92672">)</span>
+    String <span style="color:#a6e22e">send2</span><span style="color:#f92672">(</span><span style="color:#a6e22e">@Query</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;username&#34;</span><span style="color:#f92672">)</span> String username<span style="color:#f92672">);</span>
+  
+
+    <span style="color:#a6e22e">@Get</span><span style="color:#f92672">(</span>
+        url <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;/hello/user&#34;</span><span style="color:#f92672">,</span>
+        headers <span style="color:#f92672">=</span> <span style="color:#f92672">{</span>
+            <span style="color:#e6db74">&#34;Accept:application/json&#34;</span>      <span style="color:#75715e">// 覆盖接口层级配置的请求头信息
+</span><span style="color:#75715e"></span>        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">)</span>     
+    String <span style="color:#a6e22e">send3</span><span style="color:#f92672">(</span><span style="color:#a6e22e">@Query</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;username&#34;</span><span style="color:#f92672">)</span> String username<span style="color:#f92672">);</span>
+
+<span style="color:#f92672">}</span>
+</code></pre></div><h3 id="419-数据转换">4.1.9 数据转换</h3>
+<p>（1）序列化</p>
+<p>Forest中对数据进行序列化可以通过指定<code>contentType</code>属性或<code>Content-Type</code>头指定内容格式。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Request</span><span style="color:#f92672">(</span>
+        url <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;http://localhost:8080/hello/user&#34;</span><span style="color:#f92672">,</span>
+        type <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;post&#34;</span><span style="color:#f92672">,</span>
+        contentType <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;application/json&#34;</span>    <span style="color:#75715e">// 指定contentType为application/json
+</span><span style="color:#75715e"></span><span style="color:#f92672">)</span>
+String <span style="color:#a6e22e">postJson</span><span style="color:#f92672">(</span><span style="color:#a6e22e">@Body</span> MyUser user<span style="color:#f92672">);</span>   <span style="color:#75715e">// 自动将user对象序列化为JSON格式
+</span></code></pre></div><p>同理，指定为<code>application/xml</code>会将参数序列化为<code>XML</code>格式，<code>text/plain</code>则为文本，默认的<code>application/x-www-form-urlencoded</code>则为表格格式。</p>
+<p>（2）反序列化</p>
+<p>HTTP请求响应后返回结果的数据同样需要转换，Forest则会将返回结果自动转换为您通过方法返回类型指定对象类型。这个过程就是反序列化，您可以通过<code>dataType</code>指定返回数据的反序列化格式。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Request</span><span style="color:#f92672">(</span>
+    url <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;http://localhost:8080/data&#34;</span><span style="color:#f92672">,</span>
+    dataType <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;json&#34;</span>        <span style="color:#75715e">// 指定dataType为json，将按JSON格式反序列化数据
+</span><span style="color:#75715e"></span><span style="color:#f92672">)</span>
+Map <span style="color:#a6e22e">getData</span><span style="color:#f92672">();</span>               <span style="color:#75715e">// 请求响应的结果将被转换为Map类型对象
+</span></code></pre></div><h3 id="4110-日志管理">4.1.10 日志管理</h3>
+<p>Forest在发送请求时和接受响应数据时都会自动打印出HTTP请求相关的日志，其中包括：请求日志、响应状态日志、响应内容日志。</p>
+<p>（1）请求日志</p>
+<p>请求日志会打印出所有请求发送的内容，其中包括请求行、请求头、请求体三部分</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">[</span>Forest<span style="color:#f92672">]</span> Request<span style="color:#f92672">:</span> 
+    POST http<span style="color:#f92672">:</span><span style="color:#75715e">//localhost:8080/test HTTP
+</span><span style="color:#75715e"></span>    Headers<span style="color:#f92672">:</span> 
+        accessToken<span style="color:#f92672">:</span> abcdefg123456
+    Body<span style="color:#f92672">:</span> username<span style="color:#f92672">=</span>foo<span style="color:#f92672">&amp;</span>password<span style="color:#f92672">=</span>bar
+</code></pre></div><p>（2）响应状态日志</p>
+<p>响应状态日志包含了HTTP请求响应后接受到的状态码，以及响应时间</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">[</span>Forest<span style="color:#f92672">]</span> Response<span style="color:#f92672">:</span> Status <span style="color:#f92672">=</span> 200<span style="color:#f92672">,</span> Time <span style="color:#f92672">=</span> 11ms
+</code></pre></div><p>（3）响应内容日志</p>
+<p>响应内容日志则会打印出请求发送的目标服务器响应后，返回给请求接受方的实际数据内容</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">[</span>Forest<span style="color:#f92672">]</span> Response<span style="color:#f92672">:</span> Content<span style="color:#f92672">={</span><span style="color:#e6db74">&#34;flag&#34;</span><span style="color:#f92672">:</span><span style="color:#e6db74">&#34;success&#34;</span><span style="color:#f92672">,</span><span style="color:#e6db74">&#34;message&#34;</span><span style="color:#f92672">:</span><span style="color:#e6db74">&#34;成功&#34;</span><span style="color:#f92672">}</span>
+</code></pre></div><p>此外，Forest还支持回调函数以及异步请求等。</p>
+<h2 id="42-forest进阶">4.2 Forest进阶</h2>
+<h3 id="421-https">4.2.1 HTTPS</h3>
+<p>（1）单向认证</p>
+<p>如果访问的目标站点的SSL证书由信任的Root CA发布的，无需做任何事情便可以自动信任</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">Gitee</span> <span style="color:#f92672">{</span>
+    <span style="color:#a6e22e">@Request</span><span style="color:#f92672">(</span>url <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;https://gitee.com&#34;</span><span style="color:#f92672">)</span>
+    String <span style="color:#a6e22e">index</span><span style="color:#f92672">();</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>Forest的单向验证的默认协议为<code>SSLv3</code>，如果一些站点的API不支持该协议，可以在全局配置中将<code>ssl-protocol</code>属性修改为其它协议，如：<code>TLSv1.1</code>, <code>TLSv1.2</code>, <code>SSLv2</code>等等。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">forest:
+  <span style="color:#f92672">...</span>
+  ssl<span style="color:#f92672">-</span>protocol<span style="color:#f92672">:</span> TLSv1<span style="color:#f92672">.</span><span style="color:#a6e22e">2</span>
+</code></pre></div><p>全局配置可以配置一个全局统一的SSL协议，但现实情况是有很多不同服务（尤其是第三方）的API会使用不同的SSL协议，这种情况需要针对不同的接口设置不同的SSL协议。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">/**
+</span><span style="color:#75715e"> * 在某个请求接口上通过 sslProtocol 属性设置单向SSL协议
+</span><span style="color:#75715e"> */</span>
+<span style="color:#a6e22e">@Get</span><span style="color:#f92672">(</span>
+    url <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;https://localhost:5555/hello/user&#34;</span><span style="color:#f92672">,</span>
+    sslProtocol <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;SSL&#34;</span>
+<span style="color:#f92672">)</span>
+ForestResponse<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">truestSSLGet</span><span style="color:#f92672">();</span>
+</code></pre></div><p>也可以在 <code>@BaseRequest</code> 注解中设置一整个接口类的SSL协议</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@BaseRequest</span><span style="color:#f92672">(</span>sslProtocol <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;TLS&#34;</span><span style="color:#f92672">)</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">SSLClient</span> <span style="color:#f92672">{</span>
+
+    <span style="color:#a6e22e">@Get</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;https://localhost:5555/hello/user&#34;</span><span style="color:#f92672">)</span>
+    String <span style="color:#a6e22e">testSend</span><span style="color:#f92672">();</span>
+
+<span style="color:#f92672">}</span>
+</code></pre></div><p>（2）双向认证</p>
+<p>若是需要在Forest中进行双向验证的HTTPS请求，处理如下：</p>
+<p>在全局配置中添加<code>keystore</code>配置：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">forest:
+ <span style="color:#f92672">...</span>
+ ssl<span style="color:#f92672">-</span>key<span style="color:#f92672">-</span>stores<span style="color:#f92672">:</span>
+   <span style="color:#f92672">-</span> id<span style="color:#f92672">:</span> keystore1           <span style="color:#960050;background-color:#1e0010">#</span> id为该keystore的名称<span style="color:#960050;background-color:#1e0010">，</span>必填
+     file<span style="color:#f92672">:</span> test<span style="color:#f92672">.</span><span style="color:#a6e22e">keystore</span>     <span style="color:#960050;background-color:#1e0010">#</span> 公钥文件地址
+     keystore<span style="color:#f92672">-</span>pass<span style="color:#f92672">:</span> 123456   <span style="color:#960050;background-color:#1e0010">#</span> keystore秘钥
+     cert<span style="color:#f92672">-</span>pass<span style="color:#f92672">:</span> 123456       <span style="color:#960050;background-color:#1e0010">#</span> cert秘钥
+     protocols<span style="color:#f92672">:</span> SSLv3        <span style="color:#960050;background-color:#1e0010">#</span> SSL协议
+</code></pre></div><p>接着，在<code>@Request</code>中引入该<code>keystore</code>的<code>id</code>即可</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Request</span><span style="color:#f92672">(</span>
+    url <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;https://localhost:5555/hello/user&#34;</span><span style="color:#f92672">,</span>
+    keyStore <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;keystore1&#34;</span>
+<span style="color:#f92672">)</span>
+String <span style="color:#a6e22e">send</span><span style="color:#f92672">();</span>
+</code></pre></div><p>也可以在全局配置中配多个<code>keystore</code>：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">forest:
+  <span style="color:#f92672">...</span>
+  ssl<span style="color:#f92672">-</span>key<span style="color:#f92672">-</span>stores<span style="color:#f92672">:</span>
+    <span style="color:#f92672">-</span> id<span style="color:#f92672">:</span> keystore1          <span style="color:#960050;background-color:#1e0010">#</span> 第一个keystore
+      file<span style="color:#f92672">:</span> test1<span style="color:#f92672">.</span><span style="color:#a6e22e">keystore</span>    
+      keystore<span style="color:#f92672">-</span>pass<span style="color:#f92672">:</span> 123456  
+      cert<span style="color:#f92672">-</span>pass<span style="color:#f92672">:</span> 123456      
+      protocols<span style="color:#f92672">:</span> SSLv3       
+
+    <span style="color:#f92672">-</span> id<span style="color:#f92672">:</span> keystore2          <span style="color:#960050;background-color:#1e0010">#</span> 第二个keystore
+      file<span style="color:#f92672">:</span> test2<span style="color:#f92672">.</span><span style="color:#a6e22e">keystore</span>    
+      keystore<span style="color:#f92672">-</span>pass<span style="color:#f92672">:</span> abcdef  
+      cert<span style="color:#f92672">-</span>pass<span style="color:#f92672">:</span> abcdef      
+      protocols<span style="color:#f92672">:</span> SSLv3       
+      <span style="color:#f92672">...</span>
+</code></pre></div><h3 id="422-异常处理">4.2.2 异常处理</h3>
+<p>发送HTTP请求不会总是成功的，总会有失败的情况。Forest提供多种异常处理的方法来处理请求失败的过程。</p>
+<p>（1）try-catch方式</p>
+<p>最常用的是直接用<code>try-catch</code>。Forest请求失败的时候通常会以抛异常的方式报告错误， 获取错误信息只需捕获<code>ForestNetworkException</code>异常类的对象，如示例代码所示：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">/**
+</span><span style="color:#75715e"> * try-catch方式：捕获ForestNetworkException异常类的对象
+</span><span style="color:#75715e"> */</span>
+<span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+    String result <span style="color:#f92672">=</span> myClient<span style="color:#f92672">.</span><span style="color:#a6e22e">send</span><span style="color:#f92672">();</span>
+<span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>ForestNetworkException ex<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">int</span> status <span style="color:#f92672">=</span> ex<span style="color:#f92672">.</span><span style="color:#a6e22e">getStatusCode</span><span style="color:#f92672">();</span> 				<span style="color:#75715e">// 获取请求响应状态码
+</span><span style="color:#75715e"></span>    ForestResponse response <span style="color:#f92672">=</span> ex<span style="color:#f92672">.</span><span style="color:#a6e22e">getResponse</span><span style="color:#f92672">();</span> 	<span style="color:#75715e">// 获取Response对象
+</span><span style="color:#75715e"></span>    String content <span style="color:#f92672">=</span> response<span style="color:#f92672">.</span><span style="color:#a6e22e">getContent</span><span style="color:#f92672">();</span> 		<span style="color:#75715e">// 获取请求的响应内容
+</span><span style="color:#75715e"></span>    String resResult <span style="color:#f92672">=</span> response<span style="color:#f92672">.</span><span style="color:#a6e22e">getResult</span><span style="color:#f92672">();</span> 		<span style="color:#75715e">// 获取方法返回类型对应的最终数据结果
+</span><span style="color:#75715e"></span><span style="color:#f92672">}</span>
+</code></pre></div><p>（2）回调函数方式</p>
+<p>第二种方式是使用<code>OnError</code>回调函数，如示例代码所示：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">/**
+</span><span style="color:#75715e"> * 在请求接口中定义OnError回调函数类型参数
+</span><span style="color:#75715e"> */</span>
+<span style="color:#a6e22e">@Request</span><span style="color:#f92672">(</span>
+        url <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;http://localhost:8080/hello/user&#34;</span><span style="color:#f92672">,</span>
+        headers <span style="color:#f92672">=</span> <span style="color:#f92672">{</span><span style="color:#e6db74">&#34;Accept:text/plain&#34;</span><span style="color:#f92672">},</span>
+        data <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;username=${username}&#34;</span>
+<span style="color:#f92672">)</span>
+String <span style="color:#a6e22e">send</span><span style="color:#f92672">(</span><span style="color:#a6e22e">@DataVariable</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;username&#34;</span><span style="color:#f92672">)</span> String username<span style="color:#f92672">,</span> OnError onError<span style="color:#f92672">);</span>
+</code></pre></div><p>调用的代码如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// 在调用接口时，在Lambda中处理错误结果
+</span><span style="color:#75715e"></span>myClient<span style="color:#f92672">.</span><span style="color:#a6e22e">send</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;foo&#34;</span><span style="color:#f92672">,</span>  <span style="color:#f92672">(</span>ex<span style="color:#f92672">,</span> request<span style="color:#f92672">,</span> response<span style="color:#f92672">)</span> <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">int</span> status <span style="color:#f92672">=</span> response<span style="color:#f92672">.</span><span style="color:#a6e22e">getStatusCode</span><span style="color:#f92672">();</span> <span style="color:#75715e">// 获取请求响应状态码
+</span><span style="color:#75715e"></span>    String content <span style="color:#f92672">=</span> response<span style="color:#f92672">.</span><span style="color:#a6e22e">getContent</span><span style="color:#f92672">();</span> <span style="color:#75715e">// 获取请求的响应内容
+</span><span style="color:#75715e"></span>    String result <span style="color:#f92672">=</span> response<span style="color:#f92672">.</span><span style="color:#a6e22e">getResult</span><span style="color:#f92672">();</span> <span style="color:#75715e">// 获取方法返回类型对应的最终数据结果
+</span><span style="color:#75715e"></span><span style="color:#f92672">});</span>
+</code></pre></div><p>（3）ForestResponse</p>
+<p>第三种，用<code>ForestResponse</code>类作为请求方法的返回值类型，示例代码如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">/**
+</span><span style="color:#75715e"> * 用`ForestResponse`类作为请求方法的返回值类型, 其泛型参数代表实际返回数据的类型
+</span><span style="color:#75715e"> */</span>
+<span style="color:#a6e22e">@Request</span><span style="color:#f92672">(</span>
+        url <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;http://localhost:8080/hello/user&#34;</span><span style="color:#f92672">,</span>
+        headers <span style="color:#f92672">=</span> <span style="color:#f92672">{</span><span style="color:#e6db74">&#34;Accept:text/plain&#34;</span><span style="color:#f92672">},</span>
+        data <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;username=${username}&#34;</span>
+<span style="color:#f92672">)</span>
+ForestResponse<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">send</span><span style="color:#f92672">(</span><span style="color:#a6e22e">@DataVariable</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;username&#34;</span><span style="color:#f92672">)</span> String username<span style="color:#f92672">);</span>
+</code></pre></div><p>调用和处理的过程如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">ForestResponse<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span> response <span style="color:#f92672">=</span> myClient<span style="color:#f92672">.</span><span style="color:#a6e22e">send</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;foo&#34;</span><span style="color:#f92672">);</span>
+<span style="color:#75715e">// 用isError方法判断请求是否失败, 比如404, 500等情况
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>response<span style="color:#f92672">.</span><span style="color:#a6e22e">isError</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">int</span> status <span style="color:#f92672">=</span> response<span style="color:#f92672">.</span><span style="color:#a6e22e">getStatusCode</span><span style="color:#f92672">();</span> <span style="color:#75715e">// 获取请求响应状态码
+</span><span style="color:#75715e"></span>    String content <span style="color:#f92672">=</span> response<span style="color:#f92672">.</span><span style="color:#a6e22e">getContent</span><span style="color:#f92672">();</span> <span style="color:#75715e">// 获取请求的响应内容
+</span><span style="color:#75715e"></span>    String result <span style="color:#f92672">=</span> response<span style="color:#f92672">.</span><span style="color:#a6e22e">getResult</span><span style="color:#f92672">();</span> <span style="color:#75715e">// 获取方法返回类型对应的最终数据结果
+</span><span style="color:#75715e"></span><span style="color:#f92672">}</span>
+</code></pre></div><p>（4）拦截器方式</p>
+<p>若要批量处理各种不同请求的异常情况，可以定义一个拦截器, 并在拦截器的<code>onError</code>方法中处理异常，示例代码如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ErrorInterceptor</span> <span style="color:#66d9ef">implements</span> Interceptor<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span> <span style="color:#f92672">{</span>
+
+    <span style="color:#75715e">// ... ...
+</span><span style="color:#75715e"></span>
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onError</span><span style="color:#f92672">(</span>ForestRuntimeException ex<span style="color:#f92672">,</span> ForestRequest request<span style="color:#f92672">,</span> ForestResponse response<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">int</span> status <span style="color:#f92672">=</span> response<span style="color:#f92672">.</span><span style="color:#a6e22e">getStatusCode</span><span style="color:#f92672">();</span> <span style="color:#75715e">// 获取请求响应状态码
+</span><span style="color:#75715e"></span>        String content <span style="color:#f92672">=</span> response<span style="color:#f92672">.</span><span style="color:#a6e22e">getContent</span><span style="color:#f92672">();</span> <span style="color:#75715e">// 获取请求的响应内容
+</span><span style="color:#75715e"></span>        Object result <span style="color:#f92672">=</span> response<span style="color:#f92672">.</span><span style="color:#a6e22e">getResult</span><span style="color:#f92672">();</span> <span style="color:#75715e">// 获取方法返回类型对应的返回数据结果
+</span><span style="color:#75715e"></span>    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><h3 id="423-拦截器">4.2.3 拦截器</h3>
+<p>（1）构建拦截器</p>
+<p>实现com.dtflys.forest.interceptor.Interceptor接口</p>
+<pre tabindex="0"><code class="language-java'" data-lang="java'">public class SimpleInterceptor implements Interceptor&lt;String&gt; {
+
+    private final static Logger log = LoggerFactory.getLogger(SimpleInterceptor.class);
+
+    /**
+     * 该方法在被调用时，并在beforeExecute前被调用 
+     * @Param request Forest请求对象
+     * @Param args 方法被调用时传入的参数数组 
+     */
+    @Override
+    public void onInvokeMethod(ForestRequest request, ForestMethod method, Object[] args) {
+        log.info(&quot;on invoke method&quot;);
+        
+        // addAttribute作用是添加和Request以及该拦截器绑定的属性
+        addAttribute(request, &quot;A&quot;, &quot;value1&quot;);  
+        addAttribute(request, &quot;B&quot;, &quot;value2&quot;);
+    }
+
+    /**
+     * 该方法在请求发送之前被调用, 若返回false则不会继续发送请求
+     * @Param request Forest请求对象
+     */
+    @Override
+    public boolean beforeExecute(ForestRequest request) {
+        log.info(&quot;invoke Simple beforeExecute&quot;);
+        // 执行在发送请求之前处理的代码
+        request.addHeader(&quot;accessToken&quot;, &quot;11111111&quot;);  // 添加Header
+        request.addQuery(&quot;username&quot;, &quot;foo&quot;);  // 添加URL的Query参数
+        return true;  // 继续执行请求返回true
+    }
+
+    /**
+     * 该方法在请求成功响应时被调用
+     */
+    @Override
+    public void onSuccess(String data, ForestRequest request, ForestResponse response) {
+        log.info(&quot;invoke Simple onSuccess&quot;);
+        // 执行成功接收响应后处理的代码
+        int status = response.getStatusCode(); // 获取请求响应状态码
+        String content = response.getContent(); // 获取请求的响应内容
+        String result = data;  // data参数是方法返回类型对应的返回数据结果
+        result = response.getResult(); // getResult()也可以获取返回的数据结果
+        response.setResult(&quot;修改后的结果: &quot; + result);  // 可以修改请求响应的返回数据结果
+        
+        // 使用getAttributeAsString取出属性，这里只能取到与该Request对象，以及该拦截器绑定的属性
+        String attrValue1 = getAttributeAsString(request, &quot;A1&quot;);
+
+    }
+
+    /**
+     * 该方法在请求发送失败时被调用
+     */
+    @Override
+    public void onError(ForestRuntimeException ex, ForestRequest request, ForestResponse response) {
+        log.info(&quot;invoke Simple onError&quot;);
+        // 执行发送请求失败后处理的代码
+        int status = response.getStatusCode(); // 获取请求响应状态码
+        String content = response.getContent(); // 获取请求的响应内容
+        String result = response.getResult(); // 获取方法返回类型对应的返回数据结果
+    }
+
+    /**
+     * 该方法在请求发送之后被调用
+     */
+    @Override
+    public void afterExecute(ForestRequest request, ForestResponse response) {
+        log.info(&quot;invoke Simple afterExecute&quot;);
+        // 执行在发送请求之后处理的代码
+        int status = response.getStatusCode(); 		// 获取请求响应状态码
+        String content = response.getContent(); 	// 获取请求的响应内容
+        String result = response.getResult(); 		// 获取方法返回类型对应的最终数据结果
+    }
+}
+</code></pre><h3 id="424-文件上传下载">4.2.4 文件上传下载</h3>
+<p>（1）上传</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">/**
+</span><span style="color:#75715e"> * 用@DataFile注解修饰要上传的参数对象
+</span><span style="color:#75715e"> * OnProgress参数为监听上传进度的回调函数
+</span><span style="color:#75715e"> */</span>
+<span style="color:#a6e22e">@Post</span><span style="color:#f92672">(</span>url <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;/upload&#34;</span><span style="color:#f92672">)</span>
+Map <span style="color:#a6e22e">upload</span><span style="color:#f92672">(</span><span style="color:#a6e22e">@DataFile</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;file&#34;</span><span style="color:#f92672">)</span> String filePath<span style="color:#f92672">,</span> OnProgress onProgress<span style="color:#f92672">);</span>
+</code></pre></div><p>调用上传接口以及监听上传进度的代码如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">Map result <span style="color:#f92672">=</span> myClient<span style="color:#f92672">.</span><span style="color:#a6e22e">upload</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;D:\\TestUpload\\xxx.jpg&#34;</span><span style="color:#f92672">,</span> progress <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
+    System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;total bytes: &#34;</span> <span style="color:#f92672">+</span> progress<span style="color:#f92672">.</span><span style="color:#a6e22e">getTotalBytes</span><span style="color:#f92672">());</span>   <span style="color:#75715e">// 文件大小
+</span><span style="color:#75715e"></span>    System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;current bytes: &#34;</span> <span style="color:#f92672">+</span> progress<span style="color:#f92672">.</span><span style="color:#a6e22e">getCurrentBytes</span><span style="color:#f92672">());</span>   <span style="color:#75715e">// 已上传字节数
+</span><span style="color:#75715e"></span>    System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;progress: &#34;</span> <span style="color:#f92672">+</span> Math<span style="color:#f92672">.</span><span style="color:#a6e22e">round</span><span style="color:#f92672">(</span>progress<span style="color:#f92672">.</span><span style="color:#a6e22e">getRate</span><span style="color:#f92672">()</span> <span style="color:#f92672">*</span> 100<span style="color:#f92672">)</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;%&#34;</span><span style="color:#f92672">);</span>  <span style="color:#75715e">// 已上传百分比
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>progress<span style="color:#f92672">.</span><span style="color:#a6e22e">isDone</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>   <span style="color:#75715e">// 是否上传完成
+</span><span style="color:#75715e"></span>        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;--------   Upload Completed!   --------&#34;</span><span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">});</span>
+</code></pre></div><p>在文件上传的接口定义中，除了可以使用字符串表示文件路径外，还可以用以下几种类型的对象表示要上传的文件:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">/**
+</span><span style="color:#75715e"> * File类型对象
+</span><span style="color:#75715e"> */</span>
+<span style="color:#a6e22e">@Post</span><span style="color:#f92672">(</span>url <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;/upload&#34;</span><span style="color:#f92672">)</span>
+Map <span style="color:#a6e22e">upload</span><span style="color:#f92672">(</span><span style="color:#a6e22e">@DataFile</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;file&#34;</span><span style="color:#f92672">)</span> File file<span style="color:#f92672">,</span> OnProgress onProgress<span style="color:#f92672">);</span>
+
+<span style="color:#75715e">/**
+</span><span style="color:#75715e"> * byte数组
+</span><span style="color:#75715e"> * 使用byte数组和Inputstream对象时一定要定义fileName属性
+</span><span style="color:#75715e"> */</span>
+<span style="color:#a6e22e">@Post</span><span style="color:#f92672">(</span>url <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;/upload&#34;</span><span style="color:#f92672">)</span>
+Map <span style="color:#a6e22e">upload</span><span style="color:#f92672">(</span><span style="color:#a6e22e">@DataFile</span><span style="color:#f92672">(</span>value <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;file&#34;</span><span style="color:#f92672">,</span> fileName <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;${1}&#34;</span><span style="color:#f92672">)</span> <span style="color:#66d9ef">byte</span><span style="color:#f92672">[]</span> bytes<span style="color:#f92672">,</span> String filename<span style="color:#f92672">);</span>
+
+<span style="color:#75715e">/**
+</span><span style="color:#75715e"> * Inputstream 对象
+</span><span style="color:#75715e"> * 使用byte数组和Inputstream对象时一定要定义fileName属性
+</span><span style="color:#75715e"> */</span>
+<span style="color:#a6e22e">@Post</span><span style="color:#f92672">(</span>url <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;/upload&#34;</span><span style="color:#f92672">)</span>
+Map <span style="color:#a6e22e">upload</span><span style="color:#f92672">(</span><span style="color:#a6e22e">@DataFile</span><span style="color:#f92672">(</span>value <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;file&#34;</span><span style="color:#f92672">,</span> fileName <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;${1}&#34;</span><span style="color:#f92672">)</span> InputStream in<span style="color:#f92672">,</span> String filename<span style="color:#f92672">);</span>
+
+<span style="color:#75715e">/**
+</span><span style="color:#75715e"> * Spring Web MVC 中的 MultipartFile 对象
+</span><span style="color:#75715e"> */</span>
+<span style="color:#a6e22e">@PostRequest</span><span style="color:#f92672">(</span>url <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;/upload&#34;</span><span style="color:#f92672">)</span>
+Map <span style="color:#a6e22e">upload</span><span style="color:#f92672">(</span><span style="color:#a6e22e">@DataFile</span><span style="color:#f92672">(</span>value <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;file&#34;</span><span style="color:#f92672">)</span> MultipartFile multipartFile<span style="color:#f92672">,</span> OnProgress onProgress<span style="color:#f92672">);</span>
+
+<span style="color:#75715e">/**
+</span><span style="color:#75715e"> * Spring 的 Resource 对象
+</span><span style="color:#75715e"> */</span>
+<span style="color:#a6e22e">@Post</span><span style="color:#f92672">(</span>url <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;/upload&#34;</span><span style="color:#f92672">)</span>
+Map <span style="color:#a6e22e">upload</span><span style="color:#f92672">(</span><span style="color:#a6e22e">@DataFile</span><span style="color:#f92672">(</span>value <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;file&#34;</span><span style="color:#f92672">)</span> Resource resource<span style="color:#f92672">);</span>
+</code></pre></div><p>（2）多文件批量上传</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">/**
+</span><span style="color:#75715e"> * 上传Map包装的文件列表
+</span><span style="color:#75715e"> * 其中 ${_key} 代表Map中每一次迭代中的键值
+</span><span style="color:#75715e"> */</span>
+<span style="color:#a6e22e">@PostRequest</span><span style="color:#f92672">(</span>url <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;/upload&#34;</span><span style="color:#f92672">)</span>
+ForestRequest<span style="color:#f92672">&lt;</span>Map<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">uploadByteArrayMap</span><span style="color:#f92672">(</span><span style="color:#a6e22e">@DataFile</span><span style="color:#f92672">(</span>value <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;file&#34;</span><span style="color:#f92672">,</span> fileName <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;${_key}&#34;</span><span style="color:#f92672">)</span> Map<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">,</span> <span style="color:#66d9ef">byte</span><span style="color:#f92672">[]&gt;</span> byteArrayMap<span style="color:#f92672">);</span>
+
+<span style="color:#75715e">/**
+</span><span style="color:#75715e"> * 上传List包装的文件列表
+</span><span style="color:#75715e"> * 其中 ${_index} 代表每次迭代List的循环计数（从零开始计）
+</span><span style="color:#75715e"> */</span>
+<span style="color:#a6e22e">@PostRequest</span><span style="color:#f92672">(</span>url <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;/upload&#34;</span><span style="color:#f92672">)</span>
+ForestRequest<span style="color:#f92672">&lt;</span>Map<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">uploadByteArrayList</span><span style="color:#f92672">(</span><span style="color:#a6e22e">@DataFile</span><span style="color:#f92672">(</span>value <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;file&#34;</span><span style="color:#f92672">,</span> fileName <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;test-img-${_index}.jpg&#34;</span><span style="color:#f92672">)</span> List<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">byte</span><span style="color:#f92672">[]&gt;</span> byteArrayList<span style="color:#f92672">);</span>
+
+<span style="color:#75715e">/**
+</span><span style="color:#75715e"> * 上传数组包装的文件列表
+</span><span style="color:#75715e"> * 其中 ${_index} 代表每次迭代List的循环计数（从零开始计）
+</span><span style="color:#75715e"> */</span>
+<span style="color:#a6e22e">@PostRequest</span><span style="color:#f92672">(</span>url <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;/upload&#34;</span><span style="color:#f92672">)</span>
+ForestRequest<span style="color:#f92672">&lt;</span>Map<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">uploadByteArrayArray</span><span style="color:#f92672">(</span><span style="color:#a6e22e">@DataFile</span><span style="color:#f92672">(</span>value <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;file&#34;</span><span style="color:#f92672">,</span> fileName <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;test-img-${_index}.jpg&#34;</span><span style="color:#f92672">)</span> <span style="color:#66d9ef">byte</span><span style="color:#f92672">[][]</span> byteArrayArray<span style="color:#f92672">);</span>
+</code></pre></div><p>（3）下载</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">/**
+</span><span style="color:#75715e"> * 在方法上加上@DownloadFile注解
+</span><span style="color:#75715e"> * dir属性表示文件下载到哪个目录
+</span><span style="color:#75715e"> * filename属性表示文件下载成功后以什么名字保存，如果不填，这默认从URL中取得文件名
+</span><span style="color:#75715e"> * OnProgress参数为监听上传进度的回调函数
+</span><span style="color:#75715e"> */</span>
+<span style="color:#a6e22e">@Get</span><span style="color:#f92672">(</span>url <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;http://localhost:8080/images/xxx.jpg&#34;</span><span style="color:#f92672">)</span>
+<span style="color:#a6e22e">@DownloadFile</span><span style="color:#f92672">(</span>dir <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;${0}&#34;</span><span style="color:#f92672">,</span> filename <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;${1}&#34;</span><span style="color:#f92672">)</span>
+File <span style="color:#a6e22e">downloadFile</span><span style="color:#f92672">(</span>String dir<span style="color:#f92672">,</span> String filename<span style="color:#f92672">,</span> OnProgress onProgress<span style="color:#f92672">);</span>
+</code></pre></div><p>调用下载接口以及监听上传进度的代码如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">File file <span style="color:#f92672">=</span> myClient<span style="color:#f92672">.</span><span style="color:#a6e22e">downloadFile</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;D:\\TestDownload&#34;</span><span style="color:#f92672">,</span> progress <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
+    System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;total bytes: &#34;</span> <span style="color:#f92672">+</span> progress<span style="color:#f92672">.</span><span style="color:#a6e22e">getTotalBytes</span><span style="color:#f92672">());</span>   <span style="color:#75715e">// 文件大小
+</span><span style="color:#75715e"></span>    System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;current bytes: &#34;</span> <span style="color:#f92672">+</span> progress<span style="color:#f92672">.</span><span style="color:#a6e22e">getCurrentBytes</span><span style="color:#f92672">());</span>   <span style="color:#75715e">// 已下载字节数
+</span><span style="color:#75715e"></span>    System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;progress: &#34;</span> <span style="color:#f92672">+</span> Math<span style="color:#f92672">.</span><span style="color:#a6e22e">round</span><span style="color:#f92672">(</span>progress<span style="color:#f92672">.</span><span style="color:#a6e22e">getRate</span><span style="color:#f92672">()</span> <span style="color:#f92672">*</span> 100<span style="color:#f92672">)</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;%&#34;</span><span style="color:#f92672">);</span>  <span style="color:#75715e">// 已下载百分比
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>progress<span style="color:#f92672">.</span><span style="color:#a6e22e">isDone</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>   <span style="color:#75715e">// 是否下载完成
+</span><span style="color:#75715e"></span>        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;--------   Download Completed!   --------&#34;</span><span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">});</span>
+</code></pre></div><p>如果您不想将文件下载到硬盘上，而是直接在内存中读取，可以去掉@DownloadFile注解，并且用以下几种方式定义接口:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">/**
+</span><span style="color:#75715e"> * 返回类型用byte[]，可将下载的文件转换成字节数组
+</span><span style="color:#75715e"> */</span>
+<span style="color:#a6e22e">@GetRequest</span><span style="color:#f92672">(</span>url <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;http://localhost:8080/images/test-img.jpg&#34;</span><span style="color:#f92672">)</span>
+<span style="color:#66d9ef">byte</span><span style="color:#f92672">[]</span> <span style="color:#a6e22e">downloadImageToByteArray</span><span style="color:#f92672">();</span>
+
+<span style="color:#75715e">/**
+</span><span style="color:#75715e"> * 返回类型用InputStream，用流的方式读取文件内容
+</span><span style="color:#75715e"> */</span>
+<span style="color:#a6e22e">@GetRequest</span><span style="color:#f92672">(</span>url <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;http://localhost:8080/images/test-img.jpg&#34;</span><span style="color:#f92672">)</span>
+InputStream <span style="color:#a6e22e">downloadImageToInputStream</span><span style="color:#f92672">();</span>
+</code></pre></div><h3 id="425-其它">4.2.5 其它</h3>
+<p>使用Cookie、使用代理、自定义注解、模板表达式······</p>
+
+</div>
+
+
+    </main>
+
+    
+      
+    
+  </body>
+</html>

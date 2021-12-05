@@ -53,6 +53,27 @@
     <div class="posts">
 <article class="post">
   <h1 class="post-title">
+    <a href="http://KevinAmy.github.io/post/%E6%8A%80%E6%9C%AF%E4%BE%8B%E4%BC%9A%E5%88%86%E4%BA%ABforest%E6%A1%86%E6%9E%B6/">技术例会分享—Forest框架</a>
+  </h1>
+  <time datetime="2021-12-05T18:31:23&#43;0800" class="post-date">Sun, Dec 5, 2021</time>
+  一、Forest 1.1 业务需求 一般情况下是后端提供接口，前端调用，解决需求，但是有的时候为了方便，复用别人的接口（网上的，公共的第三方接口（短信、天气等）），就出现了后端调用后端接口的情况。
+此外，因为业务关系，要和许多不同第三方公司进行对接。这些服务商都提供基于http的api，但是每家公司提供api具体细节差别很大。有的基于RESTFUL规范，有的基于传统的http规范；有的需要在header里放置签名，有的需要SSL的双向认证，有的只需要SSL的单向认证；有的以JSON方式进行序列化，有的以XML方式进行序列化······类似于这样细节的差别较多。
+1.2 Forest简介 Forest 是一个开源的 Java HTTP 客户端框架，它能够将 HTTP 的所有请求信息（包括 URL、Header 以及 Body 等信息）绑定到自定义的 Interface 方法上，能够通过调用本地接口方法的方式发送 HTTP 请求。使用 Forest 就像使用类似 Dubbo 那样的 RPC 框架一样，只需要定义接口，调用接口即可，不必关心具体发送 HTTP 请求的细节。同时将 HTTP 请求信息与业务代码解耦，方便统一管理大量 HTTP 的 URL、Header 等信息。而请求的调用方完全不必在意 HTTP 的具体内容，即使该 HTTP 请求信息发生变更，大多数情况也不需要修改调用发送请求的代码。
+1.2.1 Forest特性  以Httpclient和OkHttp为后端框架 通过调用本地方法的方式去发送Http请求，实现了业务逻辑与Http协议之间的解耦 因为针对第三方接口，所以不需要依赖Spring Cloud和任何注册中心 支持所有请求方法：GET，HEAD，OPTIONS，TRACE，POST，DELETE，PUT，PATCH 支持文件上传和下载 支持灵活的模板表达式 支持拦截器处理请求的各个生命周期 支持自定义注解 支持OAuth2验证 支持过滤器来过滤传入的数据 基于注解、配置化的方式定义Http请求 支持Spring和Springboot集成 JSON字符串到Java对象的自动化解析 XML文本到Java对象的自动化解析 JSON、XML或其他类型转换器可以随意扩展和替换 支持JSON转换框架：Fastjson，Jackson，Gson 支持JAXB形式的XML转换 可以通过OnSuccess和OnError接口参数实现请求结果的回调 配置简单，一般只需要@Request一个注解就能完成绝大多数请求的定义 支持异步请求调用 约定大于配置 自定义拦截器、自定义注解，扩展Forest的能力  1.2.2 Forest工作原理 Forest会将定义好的接口通过动态代理的方式生成一个具体的实现类，然后组织、验证 HTTP 请求信息，绑定动态数据，转换数据形式，SSL 验证签名，调用后端 HTTP API(httpclient 等 API)执行实际请求，等待响应，失败重试，转换响应数据到 Java 类型等脏活累活都由这动态代理的实现类给包了。请求发送方调用这个接口时，实际上就是在调用这个干脏活累活的实现类。
+  
+  <div class="read-more-link">
+    <a href="/post/%E6%8A%80%E6%9C%AF%E4%BE%8B%E4%BC%9A%E5%88%86%E4%BA%ABforest%E6%A1%86%E6%9E%B6/">Read More…</a>
+  </div>
+  
+</article><article class="post">
+  <h1 class="post-title">
+    <a href="http://KevinAmy.github.io/post/%E4%B8%AA%E4%BA%BAcsdn%E5%8D%9A%E5%AE%A2%E9%93%BE%E6%8E%A5/">个人CSDN博客链接</a>
+  </h1>
+  <time datetime="2021-12-05T18:29:43&#43;0800" class="post-date">Sun, Dec 5, 2021</time>
+  https://blog.csdn.net/qq_38233258?spm=1000.2115.3001.5343
+  
+</article><article class="post">
+  <h1 class="post-title">
     <a href="http://KevinAmy.github.io/post/first/">First</a>
   </h1>
   <time datetime="2021-12-04T15:51:05&#43;0800" class="post-date">Sat, Dec 4, 2021</time>
